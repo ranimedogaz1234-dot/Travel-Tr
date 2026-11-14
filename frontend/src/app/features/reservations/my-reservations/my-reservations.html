@@ -1,0 +1,151 @@
+<section class="page-hero">
+  <div class="container hero-row">
+    <div>
+      <h1>Mes réservations</h1>
+      <p>Consultez, modifiez ou annulez vos voyages selon les conditions de réservation.</p>
+    </div>
+    <a routerLink="/reservations" class="btn btn-light"><app-icon name="calendar" [size]="18" />Nouvelle réservation</a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    @if (loading()) {
+      <app-loading message="Chargement de vos réservations…" />
+    } @else if (error()) {
+      <div class="alert alert--error" role="alert">
+        <app-icon name="alert" />
+        <span class="grow">{{ error() }}</span>
+        <button type="button" class="btn btn-outline btn-sm" (click)="load()">Réessayer</button>
+      </div>
+    } @else if (reservations().length === 0) {
+      <app-empty-state
+        icon="calendar"
+        title="Vous n’avez encore aucune réservation"
+        message="Parcourez nos destinations et réservez votre prochain voyage en quelques clics."
+      >
+        <a routerLink="/destinations" class="btn btn-primary">Découvrir les destinations</a>
+      </app-empty-state>
+    } @else {
+      <div class="tabs" role="tablist" aria-label="Filtrer par statut">
+        <button type="button" role="tab" [attr.aria-selected]="filter() === 'toutes'" [class.active]="filter() === 'toutes'" (click)="filter.set('toutes')">
+          Toutes <span>{{ counts().toutes }}</span>
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="filter() === 'en_attente'" [class.active]="filter() === 'en_attente'" (click)="filter.set('en_attente')">
+          En attente <span>{{ counts().en_attente }}</span>
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="filter() === 'annulee'" [class.active]="filter() === 'annulee'" (click)="filter.set('annulee')">
+          Annulées <span>{{ counts().annulee }}</span>
+        </button>
+      </div>
+
+      @if (visible().length === 0) {
+        <app-empty-state icon="info" title="Aucune réservation dans cette catégorie" />
+      }
+
+      <div class="list">
+        @for (r of visible(); track r.id) {
+          <article class="res card" [class.is-new]="isNew(r)" [class.cancelled]="r.status === 'annulee'">
+            <a class="res-photo" [routerLink]="['/destinations', r.destination.slug]" [attr.aria-label]="'Voir ' + r.destination.name">
+              <app-photo [src]="r.destination.imageUrl" [alt]="r.destination.name" [width]="400" [label]="r.destination.name" />
+            </a>
+            <div class="res-body">
+              <div class="res-head">
+                <div>
+                  <p class="res-ref">Réservation n° {{ r.id }} · effectuée le {{ r.createdAt | date: 'd MMM y' }}</p>
+                  <h2>{{ r.destination.name }} <small>{{ r.destination.country }}</small></h2>
+                  <p class="res-trip">{{ r.trip.title }}</p>
+                </div>
+                <div class="badges">
+                  @if (r.status === 'en_attente') {
+                    <span class="badge badge--warning"><app-icon name="clock" [size]="13" />En attente</span>
+                  } @else {
+                    <span class="badge badge--danger"><app-icon name="x" [size]="13" />Annulée</span>
+                  }
+                  <span class="badge badge--muted"><app-icon name="credit-card" [size]="13" />Non payée</span>
+                </div>
+              </div>
+
+              <ul class="res-facts">
+                <li><app-icon name="calendar" [size]="16" />{{ r.trip.departureDate | date: 'd MMM y' }} → {{ r.trip.returnDate | date: 'd MMM y' }}</li>
+                <li><app-icon name="users" [size]="16" />{{ r.travelers }} voyageur{{ r.travelers > 1 ? 's' : '' }}</li>
+                <li><app-icon name="tag" [size]="16" /><strong>{{ r.totalPrice | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong></li>
+              </ul>
+              @if (r.notes) {
+                <p class="res-notes"><strong>Remarques :</strong> {{ r.notes }}</p>
+              }
+              @if (r.status === 'annulee' && r.cancelledAt) {
+                <p class="res-info">Annulée le {{ r.cancelledAt | date: 'd MMMM y à HH:mm' }}.</p>
+              }
+
+              @if (r.status === 'en_attente') {
+                <div class="res-actions">
+                  <button type="button" class="btn btn-outline btn-sm" [disabled]="!r.canModify" (click)="openEdit(r)">
+                    <app-icon name="edit" [size]="15" />Modifier
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm danger" [disabled]="!r.canCancel" (click)="openCancel(r)">
+                    <app-icon name="trash" [size]="15" />Annuler
+                  </button>
+                  @if (!r.canModify && r.canCancel) {
+                    <span class="res-info">La modification n’est plus possible à l’approche du départ.</span>
+                  }
+                  @if (!r.canCancel) {
+                    <span class="res-info">Le départ est trop proche pour annuler en ligne. Contactez-nous.</span>
+                  }
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="toCancel() !== null"
+  title="Annuler cette réservation ?"
+  [message]="toCancel() ? 'Votre réservation pour ' + toCancel()!.destination.name + ' (' + toCancel()!.travelers + ' voyageur(s)) sera annulée et les places libérées. Cette action est définitive.' : ''"
+  confirmLabel="Oui, annuler"
+  cancelLabel="Conserver"
+  [danger]="true"
+  [busy]="busy()"
+  (confirmed)="confirmCancel()"
+  (cancelled)="closeDialogs()"
+>
+  @if (dialogError()) {
+    <div class="alert alert--error" role="alert"><app-icon name="alert" />{{ dialogError() }}</div>
+  }
+</app-confirm-dialog>
+
+<app-confirm-dialog
+  [open]="toEdit() !== null"
+  title="Modifier la réservation"
+  message="Ajustez le nombre de voyageurs ou vos remarques. Le total est recalculé automatiquement."
+  confirmLabel="Enregistrer"
+  [busy]="busy()"
+  (confirmed)="confirmEdit()"
+  (cancelled)="closeDialogs()"
+>
+  <form [formGroup]="editForm" class="form-grid edit-form" (ngSubmit)="confirmEdit()">
+    <div class="form-field">
+      <label for="e-travelers">Nombre de voyageurs</label>
+      <select id="e-travelers" class="select" formControlName="travelers">
+        @for (n of travelerOptions; track n) {
+          <option [ngValue]="n">{{ n }} voyageur{{ n > 1 ? 's' : '' }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-field">
+      <label for="e-notes">Remarques</label>
+      <textarea id="e-notes" class="textarea" formControlName="notes" maxlength="500" [class.is-invalid]="fieldError(editForm.controls.notes)"></textarea>
+      @if (fieldError(editForm.controls.notes); as err) {
+        <p class="field-error">{{ err }}</p>
+      }
+    </div>
+    <p class="edit-total">Nouveau total : <strong>{{ editTotal() | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong></p>
+    @if (dialogError()) {
+      <div class="alert alert--error" role="alert"><app-icon name="alert" />{{ dialogError() }}</div>
+    }
+  </form>
+</app-confirm-dialog>

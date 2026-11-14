@@ -1,0 +1,164 @@
+<section class="page-hero">
+  <div class="container">
+    <h1>Réserver un voyage</h1>
+    <p>Choisissez votre destination et votre date de départ, puis indiquez le nombre de voyageurs.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container layout">
+    <form class="card card-padded booking-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <!-- Étape 1 -->
+      <fieldset class="step">
+        <legend><span class="step-num">1</span>Destination</legend>
+        @if (destinations().loading) {
+          <app-loading message="Chargement des destinations…" />
+        } @else if (destinations().error) {
+          <div class="alert alert--error" role="alert"><app-icon name="alert" />{{ destinations().error }}</div>
+        } @else {
+          <div class="form-field">
+            <label for="b-destination">Où souhaitez-vous partir ?</label>
+            <select
+              id="b-destination"
+              class="select"
+              formControlName="destination"
+              (change)="onDestinationChange()"
+              [class.is-invalid]="fieldError(form.controls.destination)"
+            >
+              <option value="">Sélectionnez une destination</option>
+              @for (d of destinations().list; track d.id) {
+                <option [value]="d.slug">{{ d.name }} — {{ d.country }}</option>
+              }
+            </select>
+            @if (fieldError(form.controls.destination); as err) {
+              <p class="field-error">Veuillez choisir une destination.</p>
+            }
+          </div>
+        }
+      </fieldset>
+
+      <!-- Étape 2 -->
+      <fieldset class="step" [disabled]="!detail().destination">
+        <legend><span class="step-num">2</span>Date de départ</legend>
+        @if (detail().loading) {
+          <app-loading message="Chargement des départs…" />
+        } @else if (detail().error) {
+          <div class="alert alert--error" role="alert"><app-icon name="alert" />{{ detail().error }}</div>
+        } @else if (detail().destination; as d) {
+          @if (d.trips.length === 0) {
+            <p class="muted">Aucun départ n’est programmé pour cette destination.</p>
+          } @else {
+            <div class="trips" role="radiogroup" aria-label="Départs disponibles">
+              @for (t of d.trips; track t.id) {
+                <label class="trip" [class.selected]="form.controls.tripId.value === t.id" [class.full]="t.seatsAvailable === 0">
+                  <input
+                    type="radio"
+                    name="tripId"
+                    [value]="t.id"
+                    [checked]="form.controls.tripId.value === t.id"
+                    [disabled]="t.seatsAvailable === 0"
+                    (change)="selectTrip(t)"
+                  />
+                  <span class="trip-main">
+                    <strong>{{ t.title }}</strong>
+                    <span class="dates"><app-icon name="calendar" [size]="14" />{{ t.departureDate | date: 'd MMM y' }} → {{ t.returnDate | date: 'd MMM y' }}</span>
+                  </span>
+                  <span class="trip-side">
+                    <strong>{{ t.price | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+                    <small>{{ t.seatsAvailable === 0 ? 'Complet' : t.seatsAvailable + ' place(s)' }}</small>
+                  </span>
+                </label>
+              }
+            </div>
+          }
+        } @else {
+          <p class="muted">Sélectionnez d’abord une destination.</p>
+        }
+      </fieldset>
+
+      <!-- Étape 3 -->
+      <fieldset class="step" [disabled]="!selectedTrip()">
+        <legend><span class="step-num">3</span>Voyageurs</legend>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="b-travelers">Nombre de voyageurs</label>
+            <select id="b-travelers" class="select" formControlName="travelers" [class.is-invalid]="fieldError(form.controls.travelers)">
+              @for (n of travelerOptions(); track n) {
+                <option [ngValue]="n">{{ n }} voyageur{{ n > 1 ? 's' : '' }}</option>
+              }
+            </select>
+            @if (fieldError(form.controls.travelers); as err) {
+              <p class="field-error">{{ err }}</p>
+            }
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="b-notes">Remarques <span class="optional">(facultatif)</span></label>
+          <textarea
+            id="b-notes"
+            class="textarea"
+            formControlName="notes"
+            maxlength="500"
+            placeholder="Régime alimentaire, chambre communicante, besoins particuliers…"
+            [class.is-invalid]="fieldError(form.controls.notes)"
+          ></textarea>
+          <span class="hint">{{ form.controls.notes.value.length }} / 500 caractères</span>
+          @if (fieldError(form.controls.notes); as err) {
+            <p class="field-error">{{ err }}</p>
+          }
+        </div>
+      </fieldset>
+
+      @if (submitError()) {
+        <div class="alert alert--error" role="alert"><app-icon name="alert" />{{ submitError() }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting() || !selectedTrip()">
+        {{ submitting() ? 'Enregistrement…' : 'Confirmer la réservation' }}
+      </button>
+    </form>
+
+    <aside class="summary card">
+      <h2>Récapitulatif</h2>
+      @if (detail().destination; as d) {
+        <app-photo class="summary-photo" [src]="d.imageUrl" [alt]="d.name" [width]="480" [label]="d.name" />
+        <p class="summary-dest"><strong>{{ d.name }}</strong><span>{{ d.country }} · {{ d.durationDays }} jours</span></p>
+      }
+      <dl>
+        <div>
+          <dt>Départ</dt>
+          <dd>{{ selectedTrip() ? (selectedTrip()!.departureDate | date: 'd MMMM y') : '—' }}</dd>
+        </div>
+        <div>
+          <dt>Prix par personne</dt>
+          <dd>{{ selectedTrip() ? (selectedTrip()!.price | currency: 'EUR' : 'symbol' : '1.0-0') : '—' }}</dd>
+        </div>
+        <div>
+          <dt>Voyageurs</dt>
+          <dd>{{ selectedTrip() ? form.controls.travelers.value : '—' }}</dd>
+        </div>
+        <div class="total">
+          <dt>Total</dt>
+          <dd>{{ total() | currency: 'EUR' : 'symbol' : '1.0-0' }}</dd>
+        </div>
+      </dl>
+
+      <div class="alert alert--info payment">
+        <app-icon name="credit-card" [size]="18" />
+        <span>
+          <strong>Aucun paiement en ligne.</strong> Votre réservation sera enregistrée avec le statut
+          « En attente » et « Non payée ». Le règlement s’effectue ultérieurement auprès de Travel TR.
+        </span>
+      </div>
+
+      @if (rules(); as r) {
+        <ul class="rules">
+          <li><app-icon name="check" [size]="15" />Réservation possible jusqu’à {{ r.minDaysBeforeBooking }} jours avant le départ</li>
+          <li><app-icon name="check" [size]="15" />Modification jusqu’à {{ r.minDaysBeforeModification }} jours avant le départ</li>
+          <li><app-icon name="check" [size]="15" />Annulation en ligne jusqu’à {{ r.minHoursBeforeCancellation }} heures avant le départ</li>
+        </ul>
+      }
+      <a routerLink="/mes-reservations" class="manage-link">Gérer mes réservations <app-icon name="arrow-right" [size]="16" /></a>
+    </aside>
+  </div>
+</section>

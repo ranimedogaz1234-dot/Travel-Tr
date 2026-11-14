@@ -1,0 +1,21 @@
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--tr-text-soft);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color var(--tr-transition);
+
+    &.ok {
+      color: var(--tr-success);
+    }
+  }
+}
