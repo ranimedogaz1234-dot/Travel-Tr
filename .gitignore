@@ -1,0 +1,32 @@
+# Dépendances
+node_modules/
+
+# Builds et caches
+dist/
+.angular/
+coverage/
+*.tsbuildinfo
+
+# Secrets et configuration locale — ne jamais commiter
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Base de données locale (contient des comptes utilisateurs)
+backend/data/
+*.sqlite
+*.sqlite-*
+*.db
+
+# Captures générées par les tests E2E
+e2e/captures/
+
+# Journaux et fichiers système
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
