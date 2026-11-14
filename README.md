@@ -183,7 +183,8 @@ Résumé des mesures (détails dans [`docs/SECURITE.md`](docs/SECURITE.md)) :
 <img width="1302" height="1397" alt="WhatsApp Image 2026-11-14 at 7 58 55 PM" src="https://github.com/user-attachments/assets/246ddc3d-a188-4021-8067-871faca5e26a" />
 
 
-| ![Détails](docs/screenshots/03-detail.png) |
+| ![Détails](docs/screenshots/03-detail.png <img width="1035" height="1406" alt="image" src="https://github.com/user-attachments/assets/a14a6007-ed12-4ffa-b302-f41e7e607f45" />
+) |
 
 | Réservation | Mes réservations |
 |---|---|
