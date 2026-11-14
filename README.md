@@ -4,8 +4,9 @@
 
 > Projet de démonstration pour portfolio : les destinations, tarifs, dates et adresses sont **fictifs**. Aucun paiement réel n’est effectué.
 
-![Page d’accueil](docs/screenshots/<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" />
-)
+![Page d’accueil]<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" />
+<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/ea75fa9d-f05a-4dea-a6ed-66b4e112cfc2" />
+
 
 ---
 
@@ -178,7 +179,11 @@ Résumé des mesures (détails dans [`docs/SECURITE.md`](docs/SECURITE.md)) :
 
 | Destinations | Détails |
 |---|---|
-| ![Destinations](docs/screenshots/02-destinations.png) | ![Détails](docs/screenshots/03-detail.png) |
+| ![Destinations]<img width="1302" height="1397" alt="des" src="https://github.com/user-attachments/assets/b263c978-6487-43ca-bf5f-e0c696dcf4d0" /> 
+<img width="1302" height="1397" alt="WhatsApp Image 2026-11-14 at 7 58 55 PM" src="https://github.com/user-attachments/assets/246ddc3d-a188-4021-8067-871faca5e26a" />
+
+
+| ![Détails](docs/screenshots/03-detail.png) |
 
 | Réservation | Mes réservations |
 |---|---|
