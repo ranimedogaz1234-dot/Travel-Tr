@@ -4,8 +4,8 @@
 
 > Projet de démonstration pour portfolio : les destinations, tarifs, dates et adresses sont **fictifs**. Aucun paiement réel n’est effectué.
 
-![Page d’accueil]<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" />
-<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/ea75fa9d-f05a-4dea-a6ed-66b4e112cfc2" />
+![Page d’accueil] (<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" />
+<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/ea75fa9d-f05a-4dea-a6ed-66b4e112cfc2" />)
 
 
 ---
@@ -191,7 +191,8 @@ Résumé des mesures (détails dans [`docs/SECURITE.md`](docs/SECURITE.md)) :
 
 | Connexion | Mobile |
 |---|---|
-| ![Connexion](docs/screenshots/04-connexion.png) | ![Mobile](docs/screenshots/11-mobile-accueil.png) |
+| ![Connexion](<img width="1144" height="1279" alt="conx" src="https://github.com/user-attachments/assets/0c3c01ad-bd8c-4823-98ee-809b4fb890c8" />
+) | ![Mobile](docs/screenshots/11-mobile-accueil.png) |
 
 ## API REST
 
