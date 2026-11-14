@@ -4,7 +4,8 @@
 
 > Projet de démonstration pour portfolio : les destinations, tarifs, dates et adresses sont **fictifs**. Aucun paiement réel n’est effectué.
 
-![Page d’accueil](docs/screenshots/01-accueil.png)
+![Page d’accueil](docs/screenshots/<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" />
+)
 
 ---
 
