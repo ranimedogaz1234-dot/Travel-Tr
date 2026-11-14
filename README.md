@@ -1,224 +1,182 @@
-# ✈️ Travel TR
+✈️ Travel TR
+Travel TR is a full-stack travel booking web application featuring a destination catalog, search and filters, detailed destination pages, user accounts, and reservation management. The application interface is in French, with a responsive blue, white, and light-blue design for desktop, tablet, and mobile devices.
+Portfolio demo: Destinations, prices, dates, and addresses are fictional. No real payments are processed.
 
-**Travel TR** est une application web complète de réservation de voyages : catalogue de destinations, filtres, pages de détails, comptes utilisateurs sécurisés et gestion des réservations. L’interface est entièrement en français, avec un thème bleu, blanc et bleu clair, et s’adapte aux ordinateurs, tablettes et mobiles.
-
-> Projet de démonstration pour portfolio : les destinations, tarifs, dates et adresses sont **fictifs**. Aucun paiement réel n’est effectué.
-
-![Page d’accueil] (<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" />
-<img width="972" height="1397" alt="acceuil" src="https://github.com/user-attachments/assets/ea75fa9d-f05a-4dea-a6ed-66b4e112cfc2" />)
+Homepage Preview
+Homepage — View 1	Homepage — View 2
+<img src="https://github.com/user-attachments/assets/bed31789-e338-4286-9c1c-a87d493663e6" alt="Travel TR homepage — first view" width="420">	<img src="https://github.com/user-attachments/assets/ea75fa9d-f05a-4dea-a6ed-66b4e112cfc2" alt="Travel TR homepage — second view" width="420">
 
 
----
+Table of Contents
+- Features
+- Tech Stack
+- Architecture
+- Installation
+- Configuration
+- Running the Application
+- Testing
+- Security
+- Screenshots
+- REST API
+- Credits
+Features
+Page	Description
+Home	Hero section with destination, travel type, and budget search; featured destinations, travel categories, budget offers, and benefits
+Destinations	Filterable catalog by country, budget, and travel type; text search; sorting by popularity, price, rating, and name; URL-persisted filters
+Destination Details	Photo gallery, description, highlights, included and optional activities, departure dates, remaining seats, and prices
+Booking	Three-step booking process: destination → departure → travelers, with a summary and total price
+My Bookings	Filterable booking list; edit traveler details and notes; cancel according to booking rules
+Sign In / Sign Up	Client-side and server-side form validation with French error messages
+My Profile	Update name, email address, phone number, and password
+About	Project introduction, values, and how it works
+Contact	Working contact form that stores messages in the database
+404 Page	Custom page for unknown URLs
 
-## Sommaire
 
-- [Fonctionnalités](#fonctionnalités)
-- [Technologies](#technologies)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Lancement](#lancement)
-- [Tests](#tests)
-- [Sécurité](#sécurité)
-- [Captures d’écran](#captures-décran)
-- [API REST](#api-rest)
-
----
-
-## Fonctionnalités
-
-| Page | Description |
-|------|-------------|
-| **Accueil** | Héros avec recherche (destination, type, budget), destinations à la une, types de voyage, offres à petit prix, avantages |
-| **Destinations** | Catalogue filtrable par **pays**, **budget** et **type de voyage**, recherche texte, tri (popularité, prix, note, nom). Les filtres sont conservés dans l’URL |
-| **Détails de destination** | Galerie photos, description, points forts, activités (incluses / en option), départs avec places restantes et prix |
-| **Réservations** | Réservation en 3 étapes (destination → départ → voyageurs) avec récapitulatif et total |
-| **Mes réservations** | Liste filtrable, **modification** (voyageurs, remarques) et **annulation** selon les règles de réservation |
-| **Connexion / Inscription** | Formulaires validés côté client et serveur, messages d’erreur en français |
-| **Mon profil** | Modification du nom, de l’e-mail et du téléphone, changement de mot de passe |
-| **À propos** | Présentation, valeurs, fonctionnement |
-| **Contact** | Formulaire fonctionnel : les messages sont enregistrés en base de données |
-| **Page 404** | Page personnalisée pour toute URL inconnue |
-
-**Règles de réservation** (appliquées par l’API) :
-- réservation possible jusqu’à **3 jours** avant le départ, dans la limite des places disponibles ;
-- une seule réservation active par départ et par utilisateur ;
-- modification jusqu’à **7 jours** avant le départ ;
-- annulation en ligne jusqu’à **48 heures** avant le départ (les places sont libérées).
-
-**Paiement** : aucun module de paiement n’est intégré. Chaque réservation est clairement marquée **« En attente »** et **« Non payée »** ; l’application ne simule jamais un paiement.
-
-## Technologies
-
-**Frontend**
-- [Angular 22](https://angular.dev) : composants autonomes, signaux, formulaires réactifs, routes chargées à la demande (*lazy loading*), gardes de route, intercepteur HTTP
-- SCSS, polices Inter et Poppins auto-hébergées (`@fontsource`)
-- Tests unitaires : Vitest (via `ng test`)
-
-**Backend**
-- [Node.js](https://nodejs.org) + [Express 5](https://expressjs.com)
-- [SQLite](https://sqlite.org) via le module intégré `node:sqlite` (aucune compilation native, requêtes préparées)
-- [Argon2id](https://github.com/ranisalt/node-argon2) pour le hachage des mots de passe
-- [Zod](https://zod.dev) pour la validation des entrées
-- `helmet` (en-têtes de sécurité, CSP), `express-rate-limit` (anti force brute)
-- Tests d’API : `node:test` + `supertest`
-
-**Tests de bout en bout** : `puppeteer-core` avec Chrome headless.
-
-## Architecture
-
-```
+Booking rules (enforced by the API):
+- Bookings are allowed until 3 days before departure, subject to availability.
+- Each user can have only one active booking per departure.
+- Bookings can be modified until 7 days before departure.
+- Online cancellations are allowed until 48 hours before departure; canceled seats become available again.
+Payments: No payment gateway is integrated. Bookings are marked “En attente” (Pending) and “Non payée” (Unpaid); the application does not simulate completed payments.
+Tech Stack
+Frontend
+- Angular 22: standalone components, signals, reactive forms, lazy-loaded routes, route guards, and HTTP interceptor
+- SCSS and self-hosted Inter and Poppins fonts (@fontsource)
+- Unit tests with Vitest (via ng test)
+Backend
+- Node.js and Express 5
+- SQLite via the built-in node:sqlite module (no native compilation; prepared statements)
+- Argon2id for password hashing
+- Zod for input validation
+- helmet for security headers and Content Security Policy; express-rate-limit for rate limiting
+- API tests using node:test and supertest
+End-to-end testing: puppeteer-core with headless Chrome.
+Architecture
 travel-tr/
-├── backend/                     # API REST Express
+├── backend/                     # Express REST API
 │   ├── src/
-│   │   ├── app.js               # Configuration Express (sécurité, routes, SPA)
-│   │   ├── server.js            # Point d'entrée
-│   │   ├── config.js            # Variables d'environnement
-│   │   ├── db/                  # Schéma SQL, connexion, données de démonstration
-│   │   ├── middleware/          # Auth (sessions), CSRF, validation, limitation, erreurs
+│   │   ├── app.js               # Express configuration, security, routes, SPA
+│   │   ├── server.js            # Server entry point
+│   │   ├── config.js            # Environment configuration
+│   │   ├── db/                  # SQL schema, connection, demo data
+│   │   ├── middleware/          # Session auth, CSRF, validation, rate limits, errors
 │   │   ├── routes/              # auth, users, destinations, reservations, contact
-│   │   ├── utils/               # Hachage, jetons, erreurs HTTP
-│   │   └── validation/          # Schémas Zod
-│   ├── test/                    # Tests d'API
+│   │   ├── utils/               # Hashing, tokens, HTTP errors
+│   │   └── validation/          # Zod schemas
+│   ├── test/                    # API tests
 │   └── .env.example
-├── frontend/                    # Application Angular
+├── frontend/                    # Angular application
 │   └── src/app/
-│       ├── core/                # models, services, guards, interceptors, config, utils
-│       ├── shared/              # composants réutilisables, validateurs, directives
-│       ├── layout/              # en-tête et pied de page
-│       └── features/            # une page = un dossier (.ts / .html / .scss)
-├── e2e/                         # Tests de bout en bout (Chrome headless)
-└── docs/                        # Captures d'écran, rapport de sécurité
-```
-
-En développement, Angular (`ng serve`, port 4200) redirige `/api` vers l’API (port 3000) grâce à `proxy.conf.json`. En production, l’API sert aussi l’application Angular compilée : **une seule origine**, ce qui simplifie les cookies et la protection CSRF.
-
-## Installation
-
-**Prérequis** : Node.js **22.22+** (ou 24.15+) et npm.
-
-```bash
-git clone https://github.com/<votre-compte>/travel-tr.git
+│       ├── core/                # Models, services, guards, interceptors, configuration
+│       ├── shared/              # Reusable components, validators, directives
+│       ├── layout/              # Header and footer
+│       └── features/            # Feature-specific pages (.ts / .html / .scss)
+├── e2e/                         # End-to-end tests (headless Chrome)
+└── docs/                        # Screenshots and security documentation
+In development, Angular (ng serve, port 4200) forwards /api requests to the backend (port 3000) using proxy.conf.json. In production, the backend also serves the compiled Angular app from the same origin, simplifying cookie and CSRF handling.
+Installation
+Requirements: Node.js 22.22.3+ (22.x) or 24.15.0+ (24.x), and npm.
+git clone https://github.com/ranimedogaz1234-dot/travel-tr.git
 cd travel-tr
-
-# Dépendances de l'API et du frontend
 npm run install:all
-```
+Configuration
+Copy the example environment file into backend/.env.
 
-## Configuration
-
-```bash
+Windows CMD:
+copy backend\.env.example backend\.env
+macOS / Linux:
 cp backend/.env.example backend/.env
-```
+Variable	Purpose	Default
+NODE_ENV	development, production, or test	development
+PORT	Backend API port	3000
+DATABASE_PATH	SQLite database file	data/travel-tr.sqlite
+CORS_ORIGINS	Allowed origins if the frontend is hosted separately	Empty = same origin
+COOKIE_SECURE	Restrict cookies to HTTPS	true in production
+SESSION_TTL_HOURS	Session lifetime	168 (7 days)
+TRUST_PROXY	Number of trusted reverse proxies	0
 
-| Variable | Rôle | Valeur par défaut |
-|----------|------|-------------------|
-| `NODE_ENV` | `development`, `production` ou `test` | `development` |
-| `PORT` | Port de l’API | `3000` |
-| `DATABASE_PATH` | Fichier SQLite | `data/travel-tr.sqlite` |
-| `CORS_ORIGINS` | Origines autorisées (si le frontend est sur un autre domaine) | vide = même origine |
-| `COOKIE_SECURE` | Cookies réservés au HTTPS | `true` en production |
-| `SESSION_TTL_HOURS` | Durée d’une session | `168` (7 jours) |
-| `TRUST_PROXY` | Nombre de proxys inverses de confiance | `0` |
 
-Aucune clé secrète n’est nécessaire : les jetons de session sont générés aléatoirement et seul leur hachage est stocké. La base SQLite et le catalogue de démonstration sont créés automatiquement au premier démarrage.
+According to the project's configuration documentation, no manually supplied secret key is needed: session tokens are generated randomly, and only their hashes are stored. The SQLite database and demo catalog are created on first startup.
+Security reminder: Everything bundled into the Angular frontend is publicly accessible. Never place secrets in frontend code.
 
-> ⚠️ Le frontend Angular ne contient **aucun secret** : tout ce qui est compilé dans le navigateur est public.
-
-## Lancement
-
-### Mode développement (deux terminaux)
-
-```bash
-npm run dev:api     # API sur http://localhost:3000 (rechargement automatique)
-npm run dev:web     # Application sur http://localhost:4200
-```
-
-### Mode production (une seule commande)
-
-```bash
-npm run build                     # compile Angular dans frontend/dist/
+Running the Application
+Development (two terminals)
+Terminal 1 — API:
+npm run dev:api
+Terminal 2 — Angular:
+npm run dev:web
+- Frontend: http://localhost:4200
+- Backend API: http://localhost:3000
+Production
+npm run build
+macOS / Linux:
 NODE_ENV=production COOKIE_SECURE=true npm start
-```
+For Windows CMD, set environment variables separately before running npm start. For real deployments, use HTTPS with a reverse proxy (such as Nginx or Caddy) and configure TRUST_PROXY appropriately.
 
-L’application complète est alors servie par l’API sur `http://localhost:3000`. En production, placez-la derrière un proxy HTTPS (Nginx, Caddy…) et définissez `TRUST_PROXY=1`.
-
-Pour réinitialiser la base de démonstration :
-
-```bash
+To reset the demo database:
 npm --prefix backend run seed -- --reset
-```
+Testing
+npm test
+npm run test:e2e
+The project documentation describes 37 API tests, 13 Angular unit tests, and 30 end-to-end scenarios. End-to-end tests require Chrome (configured through CHROME_PATH), a running API on port 3000, and the Angular build.
 
-## Tests
+Scenarios cover navigation, search and filtering, registration, login/logout, booking creation and updates, cancellations, profiles, contact forms, route protection, page refresh, user isolation, and mobile/tablet layouts.
+Test counts and security claims are documented project features, not independently reverified for this README edit.
 
-```bash
-npm test             # tests d'API (37) + tests unitaires Angular (13)
-npm run test:e2e     # 30 scénarios de bout en bout (l'API doit tourner sur le port 3000
-                     # avec le build Angular ; Chrome requis, chemin via CHROME_PATH)
-```
+Security
+Security measures described in the project (see [`docs/SECURITE.md`](docs/SECURITE.md)):
+- Password hashing with Argon2id instead of plaintext storage
+- Server-side sessions using HttpOnly cookies, SameSite=Lax, and Secure in production; SHA-256 hashes of session tokens stored server-side
+- CSRF protection using XSRF-TOKEN and X-XSRF-TOKEN with Angular integration
+- Login rate limiting (10 attempts per 15 minutes per IP/email), plus registration and contact rate limits
+- Server-side authorization restricting reservation access to the owning user
+- Zod input validation, parameterized SQL queries, and allowlisted sort fields
+- helmet security headers and Content Security Policy
+- Generic client-facing errors without database errors or stack traces
+- The original project documentation reported 0 known vulnerabilities from npm audit at the time of its check
+Screenshots
+The original screenshots were captured in an offline test environment, so some Unsplash photos appear as the application's fallback blue gradient.
 
-Les tests de bout en bout couvrent la navigation, la recherche et les filtres, l’inscription, la connexion, la déconnexion, la réservation, la modification, l’annulation, le profil, le contact, la protection des routes, le rafraîchissement de page, l’isolation entre utilisateurs et l’affichage mobile et tablette.
-
-## Sécurité
-
-Résumé des mesures (détails dans [`docs/SECURITE.md`](docs/SECURITE.md)) :
-
-- mots de passe hachés avec **Argon2id** (jamais stockés en clair) ;
-- sessions côté serveur dans un cookie **HttpOnly**, `SameSite=Lax`, `Secure` en production ; seul le hachage SHA-256 du jeton est stocké ;
-- protection **CSRF** par jeton à double soumission (`XSRF-TOKEN` / `X-XSRF-TOKEN`, géré nativement par Angular) ;
-- **limitation des tentatives** de connexion (10 / 15 min par IP et e-mail), d’inscription et de contact ;
-- **autorisation côté serveur** : chaque requête de réservation est filtrée par l’utilisateur connecté (pas d’accès aux réservations d’autrui) ;
-- validation de toutes les entrées avec Zod, requêtes SQL **paramétrées**, tri par liste blanche ;
-- en-têtes `helmet` et **Content Security Policy** stricte ; aucune utilisation de `innerHTML` ni contournement de la sanitisation Angular ;
-- erreurs génériques côté client (pas de trace de pile ni d’erreur SQL) ;
-- `npm audit` : **0 vulnérabilité** connue au moment de la publication.
-
-## Captures d’écran
-
-> Les captures ont été réalisées dans un environnement de test sans accès à Internet : les photos Unsplash y sont remplacées par le dégradé bleu de repli prévu par l’application. En utilisation normale, les photos s’affichent.
-
-| Destinations | Détails |
-|---|---|
-| ![Destinations]<img width="1302" height="1397" alt="des" src="https://github.com/user-attachments/assets/b263c978-6487-43ca-bf5f-e0c696dcf4d0" /> 
-<img width="1302" height="1397" alt="WhatsApp Image 2026-11-14 at 7 58 55 PM" src="https://github.com/user-attachments/assets/246ddc3d-a188-4021-8067-871faca5e26a" />
+Destinations
+Destinations — View 1	Destinations — View 2
+<img src="https://github.com/user-attachments/assets/b263c978-6487-43ca-bf5f-e0c696dcf4d0" alt="Destinations catalog — first view" width="420">	<img src="https://github.com/user-attachments/assets/246ddc3d-a188-4021-8067-871faca5e26a" alt="Destinations catalog — second view" width="420">
 
 
-| ![Détails](docs/screenshots/03-detail.png <img width="1035" height="1406" alt="image" src="https://github.com/user-attachments/assets/a14a6007-ed12-4ffa-b302-f41e7e607f45" />
-) |
+Destination Details and Login
+Destination Details	Login
+<img src="https://github.com/user-attachments/assets/a14a6007-ed12-4ffa-b302-f41e7e607f45" alt="Destination details page" width="420">	<img src="https://github.com/user-attachments/assets/0c3c01ad-bd8c-4823-98ee-809b4fb890c8" alt="Login page" width="420">
 
-| Réservation | Mes réservations |
-|---|---|
-| ![Réservation](docs/screenshots/06-reservation.png) | ![Mes réservations](docs/screenshots/07-mes-reservations.png) |
 
-| Connexion | Mobile |
-|---|---|
-| ![Connexion](<img width="1144" height="1279" alt="conx" src="https://github.com/user-attachments/assets/0c3c01ad-bd8c-4823-98ee-809b4fb890c8" />
-) | ![Mobile](docs/screenshots/11-mobile-accueil.png) |
+Bookings
+Booking	My Bookings
+<img src="docs/screenshots/06-reservation.png" alt="Booking page" width="420">	<img src="docs/screenshots/07-mes-reservations.png" alt="My bookings page" width="420">
 
-## API REST
 
-Toutes les routes sont préfixées par `/api`. Les requêtes modifiantes exigent l’en-tête `X-XSRF-TOKEN`.
+Mobile
+<img src="docs/screenshots/11-mobile-accueil.png" alt="Mobile homepage" width="300">The three screenshots under docs/screenshots/ will display only if those image files exist in the repository.
 
-| Méthode | Route | Accès | Description |
-|---------|-------|-------|-------------|
-| `POST` | `/auth/register` | public | Inscription |
-| `POST` | `/auth/login` | public | Connexion |
-| `POST` | `/auth/logout` | public | Déconnexion |
-| `GET` | `/auth/me` | public | Utilisateur connecté (ou `null`) |
-| `GET` / `PUT` | `/users/me` | connecté | Lire / modifier le profil |
-| `PUT` | `/users/me/password` | connecté | Changer le mot de passe |
-| `GET` | `/destinations` | public | Liste (`q`, `country`, `type`, `budget`, `sort`) |
-| `GET` | `/destinations/filters` | public | Options de filtres |
-| `GET` | `/destinations/:slug` | public | Détails, activités, départs |
-| `GET` | `/reservations` | connecté | Mes réservations |
-| `GET` | `/reservations/rules` | connecté | Règles de réservation |
-| `GET` | `/reservations/:id` | propriétaire | Détail d’une réservation |
-| `POST` | `/reservations` | connecté | Créer une réservation |
-| `PATCH` | `/reservations/:id` | propriétaire | Modifier |
-| `POST` | `/reservations/:id/cancel` | propriétaire | Annuler |
-| `POST` | `/contact` | public | Envoyer un message |
+REST API
+All endpoints are prefixed with /api. Requests that modify data require the X-XSRF-TOKEN header.
+Method	Route	Access	Description
+POST	/auth/register	Public	Register a new account
+POST	/auth/login	Public	Log in
+POST	/auth/logout	Public	Log out
+GET	/auth/me	Public	Current user (or null)
+GET / PUT	/users/me	Authenticated	View or update profile
+PUT	/users/me/password	Authenticated	Change password
+GET	/destinations	Public	List destinations (q, country, type, budget, sort)
+GET	/destinations/filters	Public	Available filter options
+GET	/destinations/:slug	Public	Destination details, activities, departures
+GET	/reservations	Authenticated	List my bookings
+GET	/reservations/rules	Authenticated	Booking rules
+GET	/reservations/:id	Owner	Booking details
+POST	/reservations	Authenticated	Create a booking
+PATCH	/reservations/:id	Owner	Update a booking
+POST	/reservations/:id/cancel	Owner	Cancel a booking
+POST	/contact	Public	Submit a contact message
 
-## Crédits
 
-- Photos : [Unsplash](https://unsplash.com) ([licence Unsplash](https://unsplash.com/license)), chargées depuis `images.unsplash.com`.
-- Icônes : inspirées du jeu [Feather Icons](https://feathericons.com) (licence MIT).
+Credits
+- Photography: Unsplash (Unsplash License), loaded from images.unsplash.com
+- Icons: inspired by Feather Icons (MIT license)
