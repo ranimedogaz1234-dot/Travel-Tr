@@ -1,0 +1,173 @@
+<!-- Héros -->
+<section class="hero">
+  <app-photo class="hero-bg" [src]="heroImage" alt="Plage au coucher du soleil" [width]="1600" [eager]="true" [plain]="true" />
+  <div class="hero-overlay"></div>
+  <div class="container hero-content fade-up">
+    <span class="eyebrow eyebrow--light">Votre prochaine aventure commence ici</span>
+    <h1>Explorez le monde<br />avec <span>Travel TR</span></h1>
+    <p>Des destinations d’exception, des départs garantis et une réservation en ligne en quelques clics.</p>
+
+    <form class="search" role="search" (ngSubmit)="submitSearch()" aria-label="Rechercher une destination">
+      <div class="search-field">
+        <app-icon name="search" />
+        <label for="hero-q" class="visually-hidden">Destination ou pays</label>
+        <input id="hero-q" name="q" type="search" [(ngModel)]="search.q" placeholder="Où souhaitez-vous partir ?" maxlength="80" />
+      </div>
+      <div class="search-field">
+        <app-icon name="compass" />
+        <label for="hero-type" class="visually-hidden">Type de voyage</label>
+        <select id="hero-type" name="type" [(ngModel)]="search.type">
+          <option value="">Tous les types</option>
+          @for (t of options()?.types ?? []; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <div class="search-field">
+        <app-icon name="tag" />
+        <label for="hero-budget" class="visually-hidden">Budget</label>
+        <select id="hero-budget" name="budget" [(ngModel)]="search.budget">
+          <option value="">Tous les budgets</option>
+          @for (b of options()?.budgets ?? []; track b.value) {
+            <option [value]="b.value">{{ b.label }}</option>
+          }
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <app-icon name="search" [size]="18" />Rechercher
+      </button>
+    </form>
+
+    @if (!loading() && !error()) {
+      <ul class="stats" aria-label="Travel TR en chiffres">
+        <li><strong>{{ stats().destinations }}</strong><span>destinations</span></li>
+        <li><strong>{{ stats().countries }}</strong><span>pays</span></li>
+        <li><strong>{{ stats().rating }}/5</strong><span>note moyenne</span></li>
+      </ul>
+    }
+  </div>
+</section>
+
+<!-- Destinations à la une -->
+<section class="section">
+  <div class="container">
+    <div class="section-header" appReveal>
+      <span class="eyebrow">Destinations à la une</span>
+      <h2>Nos coups de cœur du moment</h2>
+      <p>Une sélection de destinations soigneusement choisies pour leur beauté, leur culture et leur art de vivre.</p>
+    </div>
+
+    @if (loading()) {
+      <app-loading message="Chargement des destinations…" />
+    } @else if (error()) {
+      <div class="alert alert--error load-error" role="alert">
+        <app-icon name="alert" />
+        <span>{{ error() }}</span>
+        <button type="button" class="btn btn-outline btn-sm" (click)="load()">Réessayer</button>
+      </div>
+    } @else {
+      <div class="grid">
+        @for (d of featured(); track d.id) {
+          <app-destination-card [destination]="d" appReveal />
+        }
+      </div>
+      <div class="center">
+        <a routerLink="/destinations" class="btn btn-outline">
+          Voir toutes les destinations <app-icon name="arrow-right" [size]="18" />
+        </a>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Types de voyage -->
+<section class="section section--white">
+  <div class="container">
+    <div class="section-header" appReveal>
+      <span class="eyebrow">Envies de voyage</span>
+      <h2>Quel voyageur êtes-vous ?</h2>
+    </div>
+    <div class="types">
+      @for (t of travelTypes; track t.type) {
+        <a class="type-card" [routerLink]="['/destinations']" [queryParams]="{ type: t.type }" appReveal>
+          <span class="type-icon"><app-icon [name]="t.icon" [size]="26" /></span>
+          <strong>{{ t.type }}</strong>
+          <span>{{ t.text }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Offres -->
+@if (offers().length) {
+  <section class="section">
+    <div class="container">
+      <div class="section-header" appReveal>
+        <span class="eyebrow">Offres du moment</span>
+        <h2>Voyager à petit prix</h2>
+        <p>Nos séjours les plus accessibles, avec des départs programmés dans les prochaines semaines.</p>
+      </div>
+      <div class="offers">
+        @for (d of offers(); track d.id) {
+          <article class="offer" appReveal>
+            <app-photo [src]="d.imageUrl" [alt]="d.name" [width]="520" [label]="d.name" />
+            <div class="offer-body">
+              <span class="badge">{{ d.durationDays }} jours · {{ d.country }}</span>
+              <h3>{{ d.name }}</h3>
+              <p>{{ d.shortDescription }}</p>
+              <div class="offer-footer">
+                <span class="offer-price">dès <strong>{{ d.priceFrom | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong> / pers.</span>
+                <a [routerLink]="['/destinations', d.slug]" class="btn btn-primary btn-sm">
+                  Découvrir <app-icon name="arrow-right" [size]="16" />
+                </a>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- Avantages -->
+<section class="section section--white">
+  <div class="container">
+    <div class="section-header" appReveal>
+      <span class="eyebrow">Pourquoi Travel TR ?</span>
+      <h2>Voyagez l’esprit tranquille</h2>
+    </div>
+    <div class="advantages">
+      @for (a of advantages; track a.title) {
+        <div class="advantage" appReveal>
+          <span class="adv-icon"><app-icon [name]="a.icon" [size]="24" /></span>
+          <h3>{{ a.title }}</h3>
+          <p>{{ a.text }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Appel à l'action -->
+<section class="section">
+  <div class="container">
+    <div class="cta" appReveal>
+      <div>
+        <h2>Prêt à préparer votre prochain voyage ?</h2>
+        <p>
+          @if (auth.isAuthenticated()) {
+            Choisissez votre départ et réservez en quelques minutes.
+          } @else {
+            Créez votre compte gratuitement pour réserver et suivre vos voyages.
+          }
+        </p>
+      </div>
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/reservations" class="btn btn-light">Réserver un voyage</a>
+      } @else {
+        <a routerLink="/inscription" class="btn btn-light">Créer mon compte</a>
+      }
+    </div>
+  </div>
+</section>

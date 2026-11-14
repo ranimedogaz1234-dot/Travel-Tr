@@ -1,0 +1,76 @@
+<section class="page-hero">
+  <div class="container">
+    <h1>À propos de Travel TR</h1>
+    <p>Une agence de voyages en ligne pensée pour rendre l’organisation de vos séjours simple, claire et agréable.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container story">
+    <div class="story-text" appReveal>
+      <span class="eyebrow">Notre histoire</span>
+      <h2>Le voyage, simplement</h2>
+      <p>
+        Travel TR est né d’une conviction : préparer un voyage devrait être aussi agréable que le voyage lui-même.
+        Nous rassemblons des destinations soigneusement sélectionnées, des départs aux dates fixes et une réservation
+        en ligne qui va à l’essentiel.
+      </p>
+      <p>
+        De Djerba à Kyoto, de Paris à Reykjavik, chaque séjour est décrit avec précision : activités incluses,
+        options sur place, places restantes et conditions de réservation. Vous savez exactement ce que vous réservez.
+      </p>
+      <div class="alert alert--info">
+        <app-icon name="info" [size]="18" />
+        <span>Travel TR est un projet de démonstration : les destinations, les tarifs et l’adresse affichés sont fictifs.</span>
+      </div>
+    </div>
+    <app-photo class="story-photo" [src]="image" alt="Plage bordée de cocotiers face aux montagnes" [width]="900" appReveal />
+  </div>
+</section>
+
+<section class="section section--white">
+  <div class="container">
+    <div class="section-header" appReveal>
+      <span class="eyebrow">Nos valeurs</span>
+      <h2>Ce qui nous guide</h2>
+    </div>
+    <div class="values">
+      @for (v of values; track v.title) {
+        <div class="value" appReveal>
+          <span class="value-icon"><app-icon [name]="v.icon" [size]="24" /></span>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.text }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container steps-wrap">
+    <div class="section-header" appReveal>
+      <span class="eyebrow">Comment ça marche ?</span>
+      <h2>Réserver en trois étapes</h2>
+    </div>
+    <ol class="steps">
+      <li appReveal>
+        <span>1</span>
+        <h3>Choisissez</h3>
+        <p>Parcourez les destinations et filtrez par pays, budget ou type de voyage.</p>
+      </li>
+      <li appReveal>
+        <span>2</span>
+        <h3>Réservez</h3>
+        <p>Sélectionnez un départ et le nombre de voyageurs. Votre réservation est enregistrée « en attente ».</p>
+      </li>
+      <li appReveal>
+        <span>3</span>
+        <h3>Gérez</h3>
+        <p>Modifiez ou annulez depuis « Mes réservations », selon les conditions affichées.</p>
+      </li>
+    </ol>
+    <div class="center">
+      <a routerLink="/destinations" class="btn btn-primary">Découvrir nos destinations <app-icon name="arrow-right" [size]="18" /></a>
+    </div>
+  </div>
+</section>

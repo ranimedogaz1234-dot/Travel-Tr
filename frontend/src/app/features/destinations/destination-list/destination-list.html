@@ -1,0 +1,107 @@
+<section class="page-hero">
+  <div class="container">
+    <h1>Nos destinations</h1>
+    <p>Filtrez par pays, budget ou type de voyage et trouvez le séjour qui vous ressemble.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container layout">
+    <aside class="filters card" [class.is-open]="filtersOpen()" aria-label="Filtres">
+      <form [formGroup]="form" (ngSubmit)="applyFilters()" class="form-grid">
+        <div class="filters-head">
+          <h2><app-icon name="filter" [size]="18" />Filtres</h2>
+          @if (hasActiveFilters()) {
+            <button type="button" class="link-btn" (click)="resetFilters()">Réinitialiser</button>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="f-q">Recherche</label>
+          <input id="f-q" class="input" type="search" formControlName="q" placeholder="Ville, pays, envie…" maxlength="80" />
+        </div>
+
+        <div class="form-field">
+          <label for="f-country">Pays</label>
+          <select id="f-country" class="select" formControlName="country">
+            <option value="">Tous les pays</option>
+            @for (c of options()?.countries ?? []; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="f-type">Type de voyage</label>
+          <select id="f-type" class="select" formControlName="type">
+            <option value="">Tous les types</option>
+            @for (t of options()?.types ?? []; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <fieldset class="form-field budgets">
+          <legend>Budget par personne</legend>
+          <label class="radio">
+            <input type="radio" formControlName="budget" value="" />
+            <span>Tous les budgets</span>
+          </label>
+          @for (b of options()?.budgets ?? []; track b.value) {
+            <label class="radio">
+              <input type="radio" formControlName="budget" [value]="b.value" />
+              <span>{{ b.label }}</span>
+            </label>
+          }
+        </fieldset>
+      </form>
+    </aside>
+
+    <div class="results">
+      <div class="toolbar">
+        <button type="button" class="btn btn-outline btn-sm filters-toggle" (click)="filtersOpen.set(!filtersOpen())" [attr.aria-expanded]="filtersOpen()">
+          <app-icon name="filter" [size]="16" />{{ filtersOpen() ? 'Masquer les filtres' : 'Afficher les filtres' }}
+        </button>
+        <p class="count" aria-live="polite">
+          @if (!state().loading && !state().error) {
+            {{ state().destinations.length }} destination{{ state().destinations.length > 1 ? 's' : '' }} trouvée{{ state().destinations.length > 1 ? 's' : '' }}
+          }
+        </p>
+        <div class="sort" [formGroup]="form">
+          <label for="f-sort">Trier par</label>
+          <select id="f-sort" class="select" formControlName="sort">
+            <option value="populaire">Popularité</option>
+            <option value="prix-asc">Prix croissant</option>
+            <option value="prix-desc">Prix décroissant</option>
+            <option value="note">Meilleure note</option>
+            <option value="nom">Nom (A → Z)</option>
+          </select>
+        </div>
+      </div>
+
+      @if (state().loading) {
+        <app-loading message="Recherche des destinations…" />
+      } @else if (state().error) {
+        <div class="alert alert--error" role="alert">
+          <app-icon name="alert" />
+          <span class="grow">{{ state().error }}</span>
+          <button type="button" class="btn btn-outline btn-sm" (click)="retry()">Réessayer</button>
+        </div>
+      } @else if (state().destinations.length === 0) {
+        <app-empty-state
+          icon="search"
+          title="Aucune destination ne correspond"
+          message="Essayez d’élargir vos critères ou de modifier votre recherche."
+        >
+          <button type="button" class="btn btn-primary" (click)="resetFilters()">Réinitialiser les filtres</button>
+        </app-empty-state>
+      } @else {
+        <div class="grid">
+          @for (d of state().destinations; track d.id) {
+            <app-destination-card [destination]="d" class="fade-up" />
+          }
+        </div>
+      }
+    </div>
+  </div>
+</section>

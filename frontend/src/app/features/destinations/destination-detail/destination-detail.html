@@ -1,0 +1,145 @@
+@if (state().loading) {
+  <div class="container"><app-loading message="Chargement de la destination…" /></div>
+} @else if (state().notFound) {
+  <section class="section">
+    <div class="container narrow center">
+      <h1>Destination introuvable</h1>
+      <p class="muted">Cette destination n’existe pas ou n’est plus proposée.</p>
+      <a routerLink="/destinations" class="btn btn-primary"><app-icon name="arrow-left" [size]="18" />Voir les destinations</a>
+    </div>
+  </section>
+} @else if (state().error) {
+  <section class="section">
+    <div class="container narrow">
+      <div class="alert alert--error" role="alert">
+        <app-icon name="alert" />
+        <span class="grow">{{ state().error }}</span>
+        <button type="button" class="btn btn-outline btn-sm" (click)="reload()">Réessayer</button>
+      </div>
+    </div>
+  </section>
+} @else if (state().destination; as d) {
+  <section class="detail-hero">
+    <app-photo
+      class="hero-photo"
+      [src]="d.gallery[activeImage()] ?? d.imageUrl"
+      [alt]="d.name + ', ' + d.country"
+      [width]="1600"
+      [eager]="true"
+      [label]="d.name" [plain]="true"
+    />
+    <div class="hero-shade"></div>
+    <div class="container hero-text fade-up">
+      <a routerLink="/destinations" class="back"><app-icon name="arrow-left" [size]="16" />Toutes les destinations</a>
+      <p class="where"><app-icon name="map-pin" [size]="16" />{{ d.country }} · {{ d.travelType }}</p>
+      <h1>{{ d.name }}</h1>
+      <p class="lead">{{ d.shortDescription }}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container layout">
+      <div class="main">
+        @if (d.gallery.length > 1) {
+          <div class="gallery" role="group" aria-label="Photos de la destination">
+            @for (img of d.gallery; track img; let i = $index) {
+              <button
+                type="button"
+                class="thumb"
+                [class.active]="activeImage() === i"
+                (click)="activeImage.set(i)"
+                [attr.aria-label]="'Afficher la photo ' + (i + 1)"
+                [attr.aria-pressed]="activeImage() === i"
+              >
+                <app-photo [src]="img" [alt]="''" [width]="240" />
+              </button>
+            }
+          </div>
+        }
+
+        <article class="card card-padded block">
+          <h2>À propos de ce voyage</h2>
+          <p class="description">{{ d.description }}</p>
+          <ul class="highlights">
+            @for (h of d.highlights; track h) {
+              <li><app-icon name="check" [size]="18" />{{ h }}</li>
+            }
+          </ul>
+        </article>
+
+        <article class="card card-padded block">
+          <h2>Activités</h2>
+          <div class="activities">
+            @for (a of includedActivities(); track a.id) {
+              <div class="activity">
+                <div class="activity-head">
+                  <h3>{{ a.name }}</h3>
+                  <span class="badge badge--success">Incluse</span>
+                </div>
+                <p>{{ a.description }}</p>
+                <span class="meta"><app-icon name="clock" [size]="14" />{{ a.duration }}</span>
+              </div>
+            }
+            @for (a of optionalActivities(); track a.id) {
+              <div class="activity">
+                <div class="activity-head">
+                  <h3>{{ a.name }}</h3>
+                  <span class="badge badge--muted">En option, sur place</span>
+                </div>
+                <p>{{ a.description }}</p>
+                <span class="meta"><app-icon name="clock" [size]="14" />{{ a.duration }}</span>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="card card-padded block" id="departs">
+          <h2>Départs disponibles</h2>
+          @if (d.trips.length === 0) {
+            <p class="muted">Aucun départ n’est programmé pour le moment. Revenez bientôt ou contactez-nous.</p>
+          } @else {
+            <div class="trips">
+              @for (t of d.trips; track t.id) {
+                <div class="trip" [class.full]="t.seatsAvailable === 0">
+                  <div class="trip-info">
+                    <strong>{{ t.title }}</strong>
+                    <span class="dates">
+                      <app-icon name="calendar" [size]="15" />
+                      Du {{ t.departureDate | date: 'd MMMM y' }} au {{ t.returnDate | date: 'd MMMM y' }}
+                    </span>
+                    <span class="seats" [class.low]="t.seatsAvailable > 0 && t.seatsAvailable <= 5">{{ seatsLabel(t) }}</span>
+                  </div>
+                  <div class="trip-action">
+                    <span class="trip-price">{{ t.price | currency: 'EUR' : 'symbol' : '1.0-0' }}<small> / pers.</small></span>
+                    @if (t.seatsAvailable > 0) {
+                      <a class="btn btn-primary btn-sm" [routerLink]="['/reservations']" [queryParams]="{ destination: d.slug, depart: t.id }">
+                        Réserver
+                      </a>
+                    } @else {
+                      <span class="btn btn-sm btn-ghost" aria-disabled="true">Complet</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </article>
+      </div>
+
+      <aside class="summary card">
+        <p class="from">À partir de</p>
+        <p class="price">{{ d.priceFrom | currency: 'EUR' : 'symbol' : '1.0-0' }}<small> / personne</small></p>
+        <ul class="facts">
+          <li><app-icon name="clock" [size]="18" /><span>Durée</span><strong>{{ d.durationDays }} jours</strong></li>
+          <li><app-icon name="map-pin" [size]="18" /><span>Pays</span><strong>{{ d.country }}</strong></li>
+          <li><app-icon name="compass" [size]="18" /><span>Type</span><strong>{{ d.travelType }}</strong></li>
+          <li><app-icon name="star" [size]="18" /><span>Note</span><strong>{{ d.rating | number: '1.1-1' }} / 5</strong></li>
+        </ul>
+        <a href="#departs" class="btn btn-primary btn-block" (click)="scrollToTrips($event)">
+          Voir les départs
+        </a>
+        <p class="note"><app-icon name="credit-card" [size]="15" />Aucun paiement en ligne : la réservation est enregistrée « en attente » et réglée ultérieurement.</p>
+      </aside>
+    </div>
+  </section>
+}
