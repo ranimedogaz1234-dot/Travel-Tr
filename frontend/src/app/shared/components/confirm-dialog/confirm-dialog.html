@@ -1,0 +1,22 @@
+<dialog #dialog aria-labelledby="confirm-title" (cancel)="onCancel($event)" (click)="onBackdropClick($event)">
+  <div class="content">
+    <h2 id="confirm-title">{{ title() }}</h2>
+    <p>{{ message() }}</p>
+    <ng-content />
+    <div class="actions">
+      <button type="button" class="btn btn-ghost" [disabled]="busy()" (click)="cancelled.emit()">
+        {{ cancelLabel() }}
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-danger]="danger()"
+        [class.btn-primary]="!danger()"
+        [disabled]="busy()"
+        (click)="confirmed.emit()"
+      >
+        {{ busy() ? 'Veuillez patienter…' : confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</dialog>

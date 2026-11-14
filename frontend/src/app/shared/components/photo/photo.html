@@ -1,0 +1,23 @@
+@if (!failed()) {
+  <img
+    [src]="url()"
+    [attr.srcset]="srcset()"
+    sizes="(max-width: 700px) 100vw, 50vw"
+    [alt]="alt()"
+    [attr.loading]="eager() ? 'eager' : 'lazy'"
+    [attr.fetchpriority]="eager() ? 'high' : null"
+    decoding="async"
+    [class.is-loaded]="loaded()"
+    (load)="loaded.set(true)"
+    (error)="failed.set(true)"
+  />
+} @else {
+  <div class="fallback" role="img" [attr.aria-label]="alt()">
+    @if (!plain()) {
+      <app-icon name="image" [size]="28" />
+    }
+    @if (label() && !plain()) {
+      <span>{{ label() }}</span>
+    }
+  </div>
+}

@@ -1,0 +1,53 @@
+.toasts {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: min(420px, calc(100vw - 2.5rem));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--tr-radius);
+  background: var(--tr-white);
+  box-shadow: var(--tr-shadow-lg);
+  border-left: 4px solid var(--tr-primary);
+  animation: tr-fade-up 280ms ease both;
+
+  p {
+    margin: 0;
+    flex: 1;
+    font-size: 0.93rem;
+  }
+
+  &--success {
+    border-left-color: var(--tr-success);
+
+    > app-icon { color: var(--tr-success); }
+  }
+
+  &--error {
+    border-left-color: var(--tr-danger);
+
+    > app-icon { color: var(--tr-danger); }
+  }
+
+  &--info > app-icon { color: var(--tr-primary); }
+}
+
+.close {
+  border: 0;
+  background: none;
+  color: var(--tr-text-soft);
+  cursor: pointer;
+  padding: 0.1rem;
+  border-radius: 6px;
+
+  &:hover { color: var(--tr-text); }
+}

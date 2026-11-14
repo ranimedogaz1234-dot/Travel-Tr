@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--tr-light), #bfdbfe);
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 500ms ease, transform 600ms ease;
+
+  &.is-loaded {
+    opacity: 1;
+  }
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--tr-white);
+  background: linear-gradient(135deg, var(--tr-primary) 0%, var(--tr-dark) 100%);
+  font-family: var(--tr-font-heading);
+  font-weight: 600;
+  font-size: 1.15rem;
+  text-align: center;
+  padding: 1rem;
+}

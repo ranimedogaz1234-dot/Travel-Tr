@@ -1,0 +1,19 @@
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { Footer } from './layout/footer/footer';
+import { Header } from './layout/header/header';
+import { ToastContainer } from './shared/components/toast-container/toast-container';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, Header, Footer, ToastContainer],
+  templateUrl: './app.html',
+  styleUrl: './app.scss',
+})
+export class App {
+  /** Le lien d'évitement donne le focus au contenu sans changer d'URL (base href). */
+  protected skipToContent(event: Event): void {
+    event.preventDefault();
+    document.getElementById('contenu')?.focus();
+  }
+}

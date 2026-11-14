@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.dest-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--tr-white);
+  border-radius: var(--tr-radius);
+  border: 1px solid var(--tr-border);
+  overflow: hidden;
+  color: inherit;
+  box-shadow: var(--tr-shadow-sm);
+  transition: transform var(--tr-transition), box-shadow var(--tr-transition);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: var(--tr-shadow-lg);
+    color: inherit;
+
+    app-photo ::ng-deep img {
+      transform: scale(1.06);
+    }
+  }
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+
+  app-photo {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.type {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  background: rgb(255 255 255 / 92%);
+  backdrop-filter: blur(4px);
+}
+
+.rating {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgb(30 58 138 / 85%);
+  color: var(--tr-white);
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  app-icon {
+    color: #fcd34d;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.2rem 1.25rem 1.3rem;
+
+  h3 {
+    margin: 0.2rem 0 0.4rem;
+  }
+}
+
+.country {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--tr-primary);
+  font-weight: 600;
+}
+
+.desc {
+  color: var(--tr-text-muted);
+  font-size: 0.93rem;
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--tr-border);
+}
+
+.duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--tr-text-soft);
+  font-size: 0.88rem;
+}
+
+.price {
+  text-align: right;
+  line-height: 1.2;
+
+  small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--tr-text-soft);
+  }
+
+  strong {
+    font-family: var(--tr-font-heading);
+    font-size: 1.25rem;
+    color: var(--tr-dark);
+  }
+}

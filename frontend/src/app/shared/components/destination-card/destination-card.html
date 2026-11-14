@@ -1,0 +1,20 @@
+@let d = destination();
+<a class="dest-card" [routerLink]="['/destinations', d.slug]" [attr.aria-label]="'Voir la destination ' + d.name + ', ' + d.country">
+  <div class="media">
+    <app-photo [src]="d.imageUrl" [alt]="d.name + ', ' + d.country" [width]="640" [label]="d.name" />
+    <span class="type badge">{{ d.travelType }}</span>
+    <span class="rating"><app-icon name="star" [size]="14" />{{ d.rating | number: '1.1-1' }}</span>
+  </div>
+  <div class="body">
+    <p class="country"><app-icon name="map-pin" [size]="15" />{{ d.country }}</p>
+    <h3>{{ d.name }}</h3>
+    <p class="desc">{{ d.shortDescription }}</p>
+    <div class="footer">
+      <span class="duration"><app-icon name="clock" [size]="15" />{{ d.durationDays }} jours</span>
+      <span class="price">
+        <small>À partir de</small>
+        <strong>{{ d.priceFrom | currency: 'EUR' : 'symbol' : '1.0-0' }}</strong>
+      </span>
+    </div>
+  </div>
+</a>

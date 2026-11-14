@@ -1,0 +1,45 @@
+<footer class="footer">
+  <div class="container grid-footer">
+    <div class="about">
+      <a routerLink="/" class="brand">
+        <span class="logo"><app-icon name="navigation" [size]="16" [strokeWidth]="2.4" /></span>
+        Travel <strong>TR</strong>
+      </a>
+      <p>Des voyages pensés pour vous : destinations soigneusement sélectionnées, départs garantis et réservation en ligne simple.</p>
+    </div>
+
+    <nav aria-label="Liens du pied de page">
+      <h2>Découvrir</h2>
+      <ul>
+        <li><a routerLink="/destinations">Toutes les destinations</a></li>
+        <li><a routerLink="/destinations" [queryParams]="{ type: 'Plage' }">Séjours plage</a></li>
+        <li><a routerLink="/destinations" [queryParams]="{ type: 'Culture' }">Voyages culturels</a></li>
+        <li><a routerLink="/destinations" [queryParams]="{ budget: 'economique' }">Petits budgets</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Liens utiles">
+      <h2>Travel TR</h2>
+      <ul>
+        <li><a routerLink="/a-propos">À propos</a></li>
+        <li><a routerLink="/contact">Contact</a></li>
+        <li><a routerLink="/mes-reservations">Mes réservations</a></li>
+        <li><a routerLink="/profil">Mon profil</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h2>Contact</h2>
+      <ul class="contact">
+        <li><app-icon name="map-pin" [size]="16" />Avenue Habib Bourguiba, Tunis (adresse fictive)</li>
+        <li><app-icon name="mail" [size]="16" /><a routerLink="/contact">Écrivez-nous via le formulaire</a></li>
+        <li><app-icon name="clock" [size]="16" />Lun – Ven, 9 h – 18 h</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container bottom">
+    <p>© {{ year }} Travel TR — Projet de démonstration. Données et tarifs fictifs.</p>
+    <p>Photos : <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash</a></p>
+  </div>
+</footer>

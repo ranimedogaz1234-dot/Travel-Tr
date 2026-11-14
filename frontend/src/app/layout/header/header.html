@@ -1,0 +1,68 @@
+<header class="header" [class.is-scrolled]="scrolled()" [class.menu-open]="menuOpen()">
+  <div class="container bar">
+    <a routerLink="/" class="brand" aria-label="Travel TR — accueil">
+      <span class="logo"><app-icon name="navigation" [size]="18" [strokeWidth]="2.4" /></span>
+      <span class="brand-name">Travel <strong>TR</strong></span>
+    </a>
+
+    <nav id="navigation-principale" class="nav" aria-label="Navigation principale">
+      <ul>
+        @for (link of links; track link.path) {
+          <li>
+            <a
+              [routerLink]="link.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: link.exact }"
+              ariaCurrentWhenActive="page"
+            >{{ link.label }}</a>
+          </li>
+        }
+      </ul>
+
+      <div class="nav-auth">
+        @if (auth.user(); as user) {
+          <div class="user-menu">
+            <button
+              type="button"
+              class="user-button"
+              (click)="toggleUserMenu()"
+              [attr.aria-expanded]="userMenuOpen()"
+              aria-haspopup="true"
+              aria-controls="menu-utilisateur"
+            >
+              <span class="avatar" aria-hidden="true">{{ user.fullName.charAt(0).toUpperCase() }}</span>
+              <span class="user-name">{{ firstName(user.fullName) }}</span>
+            </button>
+            @if (userMenuOpen()) {
+              <div id="menu-utilisateur" class="dropdown">
+                <p class="dropdown-header">
+                  <strong>{{ user.fullName }}</strong>
+                  <span>{{ user.email }}</span>
+                </p>
+                <a routerLink="/profil"><app-icon name="user" [size]="17" />Mon profil</a>
+                <a routerLink="/mes-reservations"><app-icon name="calendar" [size]="17" />Mes réservations</a>
+                <button type="button" (click)="logout()" [disabled]="loggingOut()">
+                  <app-icon name="log-out" [size]="17" />Se déconnecter
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <a routerLink="/connexion" class="btn btn-ghost btn-sm">Connexion</a>
+          <a routerLink="/inscription" class="btn btn-primary btn-sm">Inscription</a>
+        }
+      </div>
+    </nav>
+
+    <button
+      type="button"
+      class="burger"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="navigation-principale"
+      [attr.aria-label]="menuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
+    >
+      <app-icon [name]="menuOpen() ? 'x' : 'menu'" [size]="24" />
+    </button>
+  </div>
+</header>
