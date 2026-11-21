@@ -39,6 +39,11 @@ export const config = Object.freeze({
   sessionTtlHours: int(process.env.SESSION_TTL_HOURS, 24 * 7),
   /** Nombre de proxys de confiance devant l'API (pour l'IP réelle du client). */
   trustProxy: int(process.env.TRUST_PROXY, 0),
+  /**
+   * Active temporairement GET /api/health/proxy, qui renvoie l'IP retenue et les en-têtes
+   * de transfert reçus, pour mesurer TRUST_PROXY après un déploiement. Désactivé par défaut.
+   */
+  proxyDiagnostics: bool(process.env.PROXY_DIAGNOSTICS, false),
   /** Dossier du build Angular à servir (optionnel). */
   frontendDist: process.env.FRONTEND_DIST
     ? path.resolve(rootDir, process.env.FRONTEND_DIST)
