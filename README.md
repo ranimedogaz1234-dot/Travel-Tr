@@ -168,6 +168,10 @@ NODE_ENV=production COOKIE_SECURE=true npm start
 
 For Windows CMD, set environment variables separately before running `npm start`. For real deployments, use HTTPS with a reverse proxy (such as Nginx or Caddy) and configure `TRUST_PROXY` appropriately.
 
+### Deployment
+
+The app deploys as a single free Render web service using the [`render.yaml`](render.yaml) Blueprint. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the hosting limits, environment variables, verification steps, and data-persistence options.
+
 To reset the demo database:
 
 ```bash
