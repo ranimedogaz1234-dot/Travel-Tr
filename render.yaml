@@ -18,8 +18,9 @@ services:
         value: production
       - key: COOKIE_SECURE
         value: "true"
-      # Number of reverse proxies in front of the app. Must be verified after the
-      # first deploy (docs/DEPLOYMENT.md, "Verify the proxy setting").
+      # Number of reverse proxies in front of the app. 1 is a safe lower bound for
+      # the first deploy; the real value is measured afterwards and recorded here
+      # (docs/DEPLOYMENT.md, "Verify the proxy setting").
       - key: TRUST_PROXY
         value: "1"
       # The free plan has no persistent disk: this file is recreated (and the demo

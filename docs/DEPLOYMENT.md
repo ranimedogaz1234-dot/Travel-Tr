@@ -42,6 +42,7 @@ All configuration is through environment variables. **No secret key is required*
 | `PORT` | Set by Render | Do not set it manually |
 | `CORS_ORIGINS` | Empty | Same origin; no CORS needed |
 | `SESSION_TTL_HOURS` | `168` (default) | Session lifetime |
+| `PROXY_DIAGNOSTICS` | Unset | Set to `true` only while measuring `TRUST_PROXY`, then delete |
 
 Never commit a `.env` file; `.gitignore` already excludes it. Nothing in the Angular bundle is secret.
 
@@ -105,23 +106,44 @@ Render places reverse proxies in front of the service. `TRUST_PROXY` must equal 
 - **Too low:** every visitor appears to come from the proxy and shares one rate-limit bucket. After ten sign-ups in an hour, registration is refused for everyone.
 - **Too high:** a client can send a fake `X-Forwarded-For` header to get a fresh rate-limit bucket on each request and bypass the login brute-force protection.
 
-The API returns a `RateLimit` header whose `r=` value is the number of requests remaining for the caller's bucket. Use it to check the setting:
+Render does not document its proxy count, so it is measured on the deployed service. The Blueprint starts with `TRUST_PROXY=1`: there is at least one proxy, and erring low only affects availability (shared limits), never security.
+
+**1. Turn on the diagnostic.** In the Render dashboard, add the environment variable `PROXY_DIAGNOSTICS=true` (the service restarts). This enables `GET /api/health/proxy`, which returns the address used as the rate-limit key (`clientIp`), the socket address, and the forwarding headers the app received. It only reports information about the caller's own request.
+
+**2. Read the real chain.** Note your public IP address (for example from your router or any "what is my IP" page), then:
 
 ```bash
-# 1. Two normal requests: r= should go down by one.
-curl -si https://APP/api/auth/me | grep -i '^ratelimit:'
-curl -si https://APP/api/auth/me | grep -i '^ratelimit:'
-
-# 2. A spoofed address: r= must keep going down. If it jumps back to 599,
-#    TRUST_PROXY is too high; lower it by one.
-curl -si -H 'X-Forwarded-For: 203.0.113.9' https://APP/api/auth/me | grep -i '^ratelimit:'
-
-# 3. From another network (for example a phone on mobile data, using its
-#    browser's developer tools or a second machine): r= must start near 599.
-#    If it continues the count from step 1, TRUST_PROXY is too low; raise it by one.
+curl -s https://APP/api/health/proxy
+# {"trustProxy":1,"clientIp":"…","socketAddress":"…","headers":{"x-forwarded-for":"<your IP>, <proxy>, …", …}}
 ```
 
-Change `TRUST_PROXY` under **Environment** in the Render dashboard; the service restarts automatically. The server logs a warning at startup if `TRUST_PROXY` is `0` in production.
+In `x-forwarded-for`, count the entries from your IP to the end of the list, including your IP. That count is the correct `TRUST_PROXY`. For example, `"81.2.3.4, 10.0.0.5"` with your IP first gives `2`. Repeat the request about ten times: the count must be the same every time. If it varies, do not use a fixed count; stop and reassess.
+
+**3. Apply and confirm.** Set `TRUST_PROXY` to the measured count, wait for the restart, then check that `clientIp` is your IP, with and without a forged header:
+
+```bash
+curl -s https://APP/api/health/proxy                                   # clientIp = your IP
+curl -s -H 'X-Forwarded-For: 203.0.113.9' https://APP/api/health/proxy # clientIp = still your IP
+```
+
+**4. Confirm that spoofing cannot bypass the login limit.** Use a throwaway e-mail address that has no account. Eleven failed logins, each with a different forged address, must end with `429`:
+
+```bash
+APP=https://APP; JAR=$(mktemp)
+curl -s -c "$JAR" "$APP/api/auth/me" > /dev/null
+XSRF=$(awk '/XSRF-TOKEN/ {print $7}' "$JAR")
+for i in $(seq 1 11); do
+  curl -s -o /dev/null -w "%{http_code} " -b "$JAR" -H "X-XSRF-TOKEN: $XSRF" \
+    -H "Content-Type: application/json" -H "X-Forwarded-For: 203.0.113.$i" \
+    -d '{"email":"spoof-check@exemple.fr","password":"Mauvais123"}' "$APP/api/auth/login"
+done; echo   # expected: 401 ×10, then 429
+```
+
+**5. Confirm that visitors are separated.** Open `https://APP/api/health/proxy` from another network (for example a phone on mobile data): `clientIp` must be that network's address, not yours and not a Render address.
+
+**6. Turn the diagnostic off.** Delete `PROXY_DIAGNOSTICS` in the dashboard, check that `/api/health/proxy` now returns `404`, and record the measured `TRUST_PROXY` in `render.yaml` through a pull request so that a later Blueprint sync keeps it.
+
+The server logs a warning at startup if `TRUST_PROXY` is `0` in production. The automated tests in `backend/test/api.test.js` ("Derrière un proxy inverse") cover the same spoofing cases for a known hop count.
 
 ## Operations
 
