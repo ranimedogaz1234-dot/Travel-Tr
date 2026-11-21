@@ -12,7 +12,8 @@ Hosting the frontend on a separate domain (Vercel, Netlify) and the API on anoth
 
 | Item | Free plan behavior |
 |---|---|
-| Cost | $0. Render and most 2026 reviews say free instances need no credit card; some reports differ, so stop if Render asks for payment details |
+| Cost | $0. Render's documentation describes Free services without asking for a payment method; stop if Render asks for payment details |
+| Over the free allowance | **Without a payment method on file**, Render suspends Free services (instance hours, bandwidth) or disables new builds (build minutes) until the next month. Bandwidth and build overages are billed **only** if a payment method has been added, so do not add one |
 | Monthly allowance | 750 instance hours per workspace (one service running all month uses ~720) |
 | Sleep | Spins down after 15 minutes without traffic; the next visit waits about a minute while Render shows a loading page |
 | Filesystem | **Ephemeral**: lost on every deploy, restart and spin-down |
@@ -52,8 +53,9 @@ The repository contains a Render Blueprint, [`render.yaml`](../render.yaml), tha
 
 1. Sign in to <https://dashboard.render.com> with GitHub.
 2. **New → Blueprint**, select the `Travel-Tr` repository and the `main` branch.
-3. Render reads `render.yaml` and shows one free web service named `travel-tr`. Confirm that the plan shows **Free**, then click **Apply**.
-4. Wait for the build (`npm run build:prod`) and the health check (`/api/health`) to pass. The service URL is `https://travel-tr.onrender.com`, or a variant with a suffix if the name is taken.
+3. Render reads `render.yaml` and shows one free web service named `travel-tr`. Confirm that the review lists exactly one resource, a web service on the **Free** plan, then click **Deploy Blueprint**.
+4. In the Blueprint's settings, set **Auto Sync** to **No**. By default Render applies every pushed change to `render.yaml`, and a missing `plan` line defaults to a paid instance type; with Auto Sync off, Blueprint changes only apply when you click **Manual Sync** after reviewing them. Code changes still deploy automatically.
+5. Wait for the build (`npm run build:prod`) and the health check (`/api/health`) to pass. The service URL is `https://travel-tr.onrender.com`, or a variant with a suffix if the name is taken.
 
 If Render asks for payment details at any step, cancel: nothing in this setup needs a paid feature. The same service can also be created without the Blueprint, through **New → Web Service**, using the values from `render.yaml`:
 
@@ -149,8 +151,8 @@ The server logs a warning at startup if `TRUST_PROXY` is `0` in production. The 
 
 - **Logs:** Render dashboard → service → **Logs**. Errors are logged server-side only; clients receive generic messages.
 - **Redeploy:** every push to `main` triggers a deploy. Pull requests do not deploy.
-- **Reset the demo data:** **Manual Deploy → Restart service** (the free plan recreates the database).
-- **Roll back:** Render dashboard → **Events** → choose a previous deploy → **Rollback**.
+- **Reset the demo data:** **Manual Deploy → Deploy latest commit** (the free plan recreates the database). Render may also restart Free services at any time, which has the same effect.
+- **Roll back:** Render dashboard → **Events** → choose a previous deploy → **Rollback**. The free plan can only roll back to the two most recent previous deploys.
 - **Take the site offline:** **Settings → Suspend Web Service**, or delete the service.
 
 ## Persistent data (optional)

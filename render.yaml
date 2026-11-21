@@ -5,6 +5,7 @@ services:
   - type: web
     name: travel-tr
     runtime: node
+    # Keep this line: if `plan` is omitted, Render defaults to a paid instance type.
     plan: free
     region: frankfurt
     branch: main
