@@ -12,6 +12,11 @@
       <h1>Inscription</h1>
       <p class="subtitle">Quelques secondes suffisent pour créer votre compte.</p>
 
+      <div class="alert alert--info demo-note" role="note">
+        <app-icon name="info" [size]="18" />
+        <span>Site de démonstration : utilisez un nom et une adresse e-mail fictifs (aucun e-mail n’est envoyé). Les comptes et réservations sont effacés régulièrement.</span>
+      </div>
+
       <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid" novalidate>
         <div class="form-field">
           <label for="reg-name">Nom complet</label>

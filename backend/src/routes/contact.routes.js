@@ -11,7 +11,7 @@ export function contactRoutes(db) {
   router.post('/', contactLimiter, validate(contactSchema), (req, res) => {
     const { name, email, subject, message } = req.valid.body;
     insert.run(name, email, subject, message);
-    res.status(201).json({ message: 'Votre message a bien été enregistré. Notre équipe vous répondra par e-mail.' });
+    res.status(201).json({ message: 'Votre message a bien été enregistré.' });
   });
 
   return router;

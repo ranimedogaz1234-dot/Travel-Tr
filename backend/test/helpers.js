@@ -6,9 +6,9 @@ const { createApp } = await import('../src/app.js');
 const { openDatabase } = await import('../src/db/database.js');
 
 /** Crée une application isolée (base en mémoire) sans frontend. */
-export function createTestApp() {
+export function createTestApp(options = {}) {
   const db = openDatabase(':memory:');
-  const app = createApp({ db, frontendDist: '/nonexistent' });
+  const app = createApp({ db, frontendDist: '/nonexistent', ...options });
   return { app, db };
 }
 

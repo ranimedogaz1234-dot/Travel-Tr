@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Footer } from './layout/footer/footer';
 import { Header } from './layout/header/header';
+import { Icon } from './shared/components/icon/icon';
 import { ToastContainer } from './shared/components/toast-container/toast-container';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer, ToastContainer],
+  imports: [RouterOutlet, Header, Footer, ToastContainer, Icon],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

@@ -1,7 +1,7 @@
 <section class="page-hero">
   <div class="container">
     <h1>Contactez-nous</h1>
-    <p>Une question sur une destination ou une réservation ? Écrivez-nous, nous vous répondrons par e-mail.</p>
+    <p>Une question sur une destination ou une réservation ? Écrivez-nous.</p>
   </div>
 </section>
 
@@ -12,7 +12,7 @@
         <span class="info-icon"><app-icon name="clock" /></span>
         <div>
           <h2>Horaires</h2>
-          <p>Du lundi au vendredi, de 9 h à 18 h.<br />Réponse sous 2 jours ouvrés.</p>
+          <p>Du lundi au vendredi, de 9 h à 18 h.</p>
         </div>
       </div>
       <div class="info-item card">
@@ -34,6 +34,11 @@
     <form class="card card-padded" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <h2>Envoyer un message</h2>
       <div class="form-grid">
+        <div class="alert alert--info" role="note">
+          <app-icon name="info" [size]="18" />
+          <span>Site de démonstration : les messages sont enregistrés mais ne reçoivent pas de réponse. N’indiquez pas de données personnelles réelles.</span>
+        </div>
+
         <div class="form-row">
           <div class="form-field">
             <label for="c-name">Nom complet</label>

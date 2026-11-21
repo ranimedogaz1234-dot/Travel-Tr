@@ -42,6 +42,65 @@ describe('Sécurité générale', () => {
   });
 });
 
+describe('Sonde de santé', () => {
+  it('répond sans compter dans la limite de débit ni poser de cookie', async () => {
+    const res = await request(app).get('/api/health');
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.body, { status: 'ok' });
+    assert.equal(res.headers['cache-control'], 'no-store');
+    assert.equal(res.headers['ratelimit'], undefined);
+    assert.equal(res.headers['set-cookie'], undefined);
+  });
+
+  it('n’expose pas le diagnostic de proxy par défaut', async () => {
+    const res = await request(app).get('/api/health/proxy');
+    assert.equal(res.status, 404);
+  });
+
+  it('renvoie 503 si la base de données est inaccessible', async () => {
+    const isolated = createTestApp();
+    isolated.db.close();
+    const res = await request(isolated.app).get('/api/health');
+    assert.equal(res.status, 503);
+    assert.deepEqual(res.body, { status: 'indisponible' });
+  });
+});
+
+describe('Derrière un proxy inverse (TRUST_PROXY=1)', () => {
+  const { app: proxied } = createTestApp({ trustProxy: 1, proxyDiagnostics: true });
+  const realClient = '198.51.100.7';
+
+  it('le diagnostic retient l’adresse ajoutée par le proxy, pas une adresse falsifiée', async () => {
+    const res = await request(proxied).get('/api/health/proxy').set('X-Forwarded-For', `6.6.6.6, ${realClient}`);
+    assert.equal(res.status, 200);
+    assert.equal(res.body.clientIp, realClient);
+    assert.equal(res.body.trustProxy, 1);
+    assert.equal(res.body.headers['x-forwarded-for'], `6.6.6.6, ${realClient}`);
+  });
+
+  it('une adresse falsifiée ne contourne pas la limite anti force brute', async () => {
+    const client = await createClient(proxied);
+    const email = `force-brute-${Date.now()}@exemple.fr`;
+    const attempt = (xff) =>
+      client.agent
+        .post('/api/auth/login')
+        .set('X-XSRF-TOKEN', client.xsrf)
+        .set('X-Forwarded-For', xff)
+        .send({ email, password: 'Mauvais123' });
+
+    for (let i = 1; i <= 10; i += 1) {
+      const res = await attempt(`203.0.113.${i}, ${realClient}`);
+      assert.equal(res.status, 401, `tentative ${i}`);
+    }
+    const blocked = await attempt(`203.0.113.99, ${realClient}`);
+    assert.equal(blocked.status, 429);
+
+    // Un autre visiteur réel garde sa propre limite.
+    const other = await attempt('192.0.2.44');
+    assert.equal(other.status, 401);
+  });
+});
+
 describe('Authentification', () => {
   it('inscrit un utilisateur, ouvre une session HttpOnly et ne renvoie pas le hachage', async () => {
     const client = await createClient(app);
