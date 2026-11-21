@@ -53,6 +53,21 @@ export function createApp({ db, frontendDist = config.frontendDist } = {}) {
   app.use(cookieParser());
 
   const api = express.Router();
+
+  // Sonde de santé (hébergeur, supervision) : déclarée avant la limite de débit et
+  // la protection CSRF pour que les vérifications fréquentes ne soient jamais bloquées.
+  // Elle interroge la base afin de signaler une API incapable de servir les données.
+  const ping = db.prepare('SELECT 1 AS ok');
+  api.get('/health', (_req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+      ping.get();
+      res.json({ status: 'ok' });
+    } catch {
+      res.status(503).json({ status: 'indisponible' });
+    }
+  });
+
   api.use(apiLimiter);
   api.use(csrfProtection);
   api.use(loadUser(db));
@@ -61,7 +76,6 @@ export function createApp({ db, frontendDist = config.frontendDist } = {}) {
     next();
   });
 
-  api.get('/health', (_req, res) => res.json({ status: 'ok' }));
   api.use('/auth', authRoutes(db));
   api.use('/users', userRoutes(db));
   api.use('/destinations', destinationRoutes(db));

@@ -42,6 +42,25 @@ describe('Sécurité générale', () => {
   });
 });
 
+describe('Sonde de santé', () => {
+  it('répond sans compter dans la limite de débit ni poser de cookie', async () => {
+    const res = await request(app).get('/api/health');
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.body, { status: 'ok' });
+    assert.equal(res.headers['cache-control'], 'no-store');
+    assert.equal(res.headers['ratelimit'], undefined);
+    assert.equal(res.headers['set-cookie'], undefined);
+  });
+
+  it('renvoie 503 si la base de données est inaccessible', async () => {
+    const isolated = createTestApp();
+    isolated.db.close();
+    const res = await request(isolated.app).get('/api/health');
+    assert.equal(res.status, 503);
+    assert.deepEqual(res.body, { status: 'indisponible' });
+  });
+});
+
 describe('Authentification', () => {
   it('inscrit un utilisateur, ouvre une session HttpOnly et ne renvoie pas le hachage', async () => {
     const client = await createClient(app);
