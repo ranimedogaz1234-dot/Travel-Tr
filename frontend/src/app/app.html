@@ -1,5 +1,9 @@
 <a class="skip-link" href="#contenu" (click)="skipToContent($event)">Aller au contenu principal</a>
 <app-header />
+<p class="demo-banner" role="note">
+  <app-icon name="info" [size]="16" />
+  <span><strong>Site de démonstration</strong> — voyages fictifs, aucun paiement. N’utilisez pas de données personnelles réelles.</span>
+</p>
 <main id="contenu" tabindex="-1">
   <router-outlet />
 </main>
