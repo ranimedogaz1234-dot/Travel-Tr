@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API tests (Express + SQLite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm --prefix backend ci --no-audit --no-fund
+      - run: npm --prefix backend test
+
+  web:
+    name: Angular unit tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm --prefix frontend ci --no-audit --no-fund
+      - run: npm --prefix frontend test
+      - run: npm --prefix frontend run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/travel-tr/browser
+          retention-days: 3
+
+  e2e:
+    name: End-to-end scenarios (headless Chrome)
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PORT: 3000
+      # Plain HTTP on localhost, so cookies must not be "Secure" here.
+      COOKIE_SECURE: 'false'
+      # The scenarios log in many times in a row; rate limiting stays on in real deployments.
+      RATE_LIMIT_DISABLED: 'true'
+      DATABASE_PATH: ${{ github.workspace }}/e2e-data/travel-tr.sqlite
+      FRONTEND_DIST: ${{ github.workspace }}/frontend/dist/travel-tr/browser
+      CHROME_PATH: /usr/bin/google-chrome
+      SHOTS_DIR: ${{ github.workspace }}/e2e-captures/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            e2e/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/travel-tr/browser
+      - run: npm --prefix backend ci --no-audit --no-fund
+      - run: npm --prefix e2e ci --no-audit --no-fund
+      - name: Start the API (serves the Angular build)
+        run: |
+          mkdir -p e2e-data e2e-captures
+          # NODE_ENV is set only here: job-wide it would make `npm ci` skip devDependencies.
+          NODE_ENV=production npm --prefix backend start > api.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fs http://localhost:3000/ > /dev/null && exit 0
+            sleep 1
+          done
+          echo "API did not start"; cat api.log; exit 1
+      - name: Run the end-to-end scenarios
+        run: npm --prefix e2e test
+      - name: Upload screenshots and API log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-captures
+          path: |
+            e2e-captures/
+            api.log
+          retention-days: 7

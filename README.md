@@ -1,5 +1,7 @@
 # ✈️ Travel TR
 
+[![CI](https://github.com/ranimedogaz1234-dot/Travel-Tr/actions/workflows/ci.yml/badge.svg)](https://github.com/ranimedogaz1234-dot/Travel-Tr/actions/workflows/ci.yml)
+
 **Travel TR** is a full-stack travel booking web application featuring a destination catalog, search and filters, detailed destination pages, user accounts, and reservation management. The application interface is in French, with a responsive blue, white, and light-blue design for desktop, tablet, and mobile devices.
 
 > **Portfolio demo:** Destinations, prices, dates, and addresses are fictional. No real payments are processed.
@@ -185,11 +187,19 @@ npm test
 npm run test:e2e
 ```
 
-The project documentation describes **37 API tests**, **13 Angular unit tests**, and **30 end-to-end scenarios**. End-to-end tests require Chrome (configured through `CHROME_PATH`), a running API on port 3000, and the Angular build.
+| Suite | Tool | Tests |
+|---|---|---|
+| API | `node:test` + `supertest` | 37 |
+| Angular unit tests | Vitest via `ng test` | 13 |
+| End-to-end | `puppeteer-core` + headless Chrome | 30 scenarios |
+
+End-to-end tests require Chrome (configured through `CHROME_PATH`), a running API on port 3000, and the Angular build.
 
 Scenarios cover navigation, search and filtering, registration, login/logout, booking creation and updates, cancellations, profiles, contact forms, route protection, page refresh, user isolation, and mobile/tablet layouts.
 
-> Test counts and security claims are documented project features, not independently reverified for this README edit.
+### Continuous integration
+
+Every push to `main` and every pull request runs [GitHub Actions](.github/workflows/ci.yml): the API tests, the Angular unit tests and production build, and then the 30 end-to-end scenarios in headless Chrome against the built app. Screenshots from the end-to-end run are uploaded as a workflow artifact.
 
 ## Security
 
