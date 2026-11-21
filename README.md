@@ -189,7 +189,7 @@ npm run test:e2e
 
 | Suite | Tool | Tests |
 |---|---|---|
-| API | `node:test` + `supertest` | 37 |
+| API | `node:test` + `supertest` | 42 |
 | Angular unit tests | Vitest via `ng test` | 13 |
 | End-to-end | `puppeteer-core` + headless Chrome | 30 scenarios |
 
