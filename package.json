@@ -8,6 +8,7 @@
     "dev:api": "npm --prefix backend run dev",
     "dev:web": "npm --prefix frontend start",
     "build": "npm --prefix frontend run build",
+    "build:prod": "npm --prefix backend ci --omit=dev && npm --prefix frontend ci --include=dev && npm --prefix frontend run build",
     "start": "npm --prefix backend start",
     "test": "npm --prefix backend test && npm --prefix frontend test",
     "test:e2e": "npm --prefix e2e test"

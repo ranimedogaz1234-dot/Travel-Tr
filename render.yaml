@@ -1,0 +1,28 @@
+# Render Blueprint — one free web service that runs the Express API and serves
+# the compiled Angular app from the same origin (no CORS, first-party cookies).
+# See docs/DEPLOYMENT.md before applying it.
+services:
+  - type: web
+    name: travel-tr
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    # Builds the API (production dependencies only) and the Angular app.
+    # --include=dev is required because NODE_ENV=production is also set at build time.
+    buildCommand: npm run build:prod
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      # Number of reverse proxies in front of the app. Must be verified after the
+      # first deploy (docs/DEPLOYMENT.md, "Verify the proxy setting").
+      - key: TRUST_PROXY
+        value: "1"
+      # The free plan has no persistent disk: this file is recreated (and the demo
+      # catalog reseeded) on every deploy, restart or spin-down.
+      - key: DATABASE_PATH
+        value: data/travel-tr.sqlite
